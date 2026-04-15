@@ -251,3 +251,34 @@ add_subject(){
 	echo "$credits" >> "$subject_dir/$code.sub"
 	echo "added: $code"
 }
+#--------------------------
+
+
+list_subjects(){
+
+
+	files=$(ls "$subject_dir"/*.sub 2>/dev/null)
+
+	if [[ -z $files ]]
+	then
+        	echo "no subjects."
+        	return
+	fi
+
+	echo "code | name | credits"
+
+	echo "---------------------"
+	for file in $files
+	do
+
+		code=$(sed -n '1p' "$file")
+
+		name=$(sed -n '2p' "$file")
+
+		credits=$(sed -n '3p' "$file")
+
+		echo "$code | $name | $credits"
+
+	done
+
+}
