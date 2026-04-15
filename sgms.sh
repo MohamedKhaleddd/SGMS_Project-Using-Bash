@@ -91,6 +91,21 @@ while true
         done
 
 }
+function ListStudents(){
+
+if [[ ! -d "$std_data_dir" || -z "$(ls "$std_data_dir")" ]]; then
+echo "not founded any students"
+return
+fi
+
+  for file in "$std_data_dir"/*.stu
+    do
+        echo "----------------------"
+        cat "$file"
+    done
+
+}
+
 
 
 ManageStudents() {
