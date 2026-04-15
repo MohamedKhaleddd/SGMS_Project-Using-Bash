@@ -2,6 +2,39 @@
 
 shopt -s extglob
 
+std_data_dir="sgms_data/students/"
+
+mkdir -p "$std_data_dir"
+
+
+ManageStudents() {
+    while true
+     do
+        echo ""
+        echo "*** ManageStudents ***"
+
+        select choice in \
+		"▸AddStudent" \
+		"▸ListStudents"\
+		"▸UpdateStudent"\
+		"▸DeleteStudent" \
+		"▸Exit"
+        do
+            case $REPLY in
+                1) AddStudent ;;
+                2) ListStudents ;;
+                3) UpdateStudent ;;
+                4) DeleteStudent ;;
+                5) mainmenu ;;
+                *)
+                    echo "Invalid option"
+                    ;;
+            esac
+            break
+        done
+    done
+}
+
 mainmenu(){
 while true; do
     echo ""
