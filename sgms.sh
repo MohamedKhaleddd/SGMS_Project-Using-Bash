@@ -165,3 +165,89 @@ while true; do
 done
 }
 mainmenu
+#---------------------------------------------------------- subject part ( omar )
+subject_dir="sgms_data/subjects"
+grade_dir="sgms_data/grades"
+
+subject_menu(){
+	      mkdir -p "$subject_dir" "$grade_dir"
+	 while true
+	do
+		echo "----- subject management -----"
+		echo "1) add subject"
+		echo "2) list subjects"
+		echo "3) update subject"
+		echo "4) delete subject"
+		echo "5) back"
+		read -p "choose: " choice
+
+		case $choice in
+			1) add_subject ;;
+			2) list_subjects ;;
+			3) update_subject ;;
+			4) delete_subject ;;
+			5) break ;;
+			*) echo "invalid choice." ;;
+		esac
+	done
+}
+# ----------------------
+add_subject(){
+
+	while true
+	 do
+
+		read -p "subject code : " code
+		if [[ ! $code =~ ^[A-Za-z]{2,5}[0-9]{2,4}$ ]]
+		then
+			echo "invalid code."
+			continue
+		fi
+
+		if [[ -f "$subject_dir/$code.sub" ]]
+		then
+			echo "already exists."
+			continue
+		fi
+	   break
+	done
+
+
+	
+       while true
+        do
+          read -p "subject name: " name
+
+         if [[ -z $name ]]
+          then
+        echo "name can't be empty."
+        continue
+           fi
+
+         if [[ ! $name =~ ^[A-Za-z]+([[:space:]][A-Za-z]+)*$ ]]
+          then
+        echo "invalid name (letters only)."
+        continue
+         fi
+
+         break
+        done
+        
+        
+	while true
+	do
+		read -p "credits (1-6): " credits
+		if [[ ! $credits =~ ^[0-9]+$ ]] || [[ $credits -lt 1 || $credits -gt 6 ]]
+		then
+			echo "invalid credits."
+			continue
+		fi
+		break
+	done
+
+
+	echo "$code"    >  "$subject_dir/$code.sub"
+	echo "$name"    >> "$subject_dir/$code.sub"
+	echo "$credits" >> "$subject_dir/$code.sub"
+	echo "added: $code"
+}
