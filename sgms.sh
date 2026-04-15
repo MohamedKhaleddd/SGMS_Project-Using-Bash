@@ -150,7 +150,7 @@ while true; do
 	do
 		case $REPLY in 
 	1)  	 ManageStudents ;;
-	2)	 ManageSubjects ;;
+	2)	 subject_menu ;;
 	3) 	 ManageGrades ;;
 	4)	 Reports_Statistics ;;
 	5)	 exit ;;
@@ -166,6 +166,8 @@ done
 }
 mainmenu
 #---------------------------------------------------------- subject part ( omar )
+
+
 subject_dir="sgms_data/subjects"
 grade_dir="sgms_data/grades"
 
@@ -192,6 +194,7 @@ subject_menu(){
 	done
 }
 # ----------------------
+
 add_subject(){
 
 	while true
@@ -250,4 +253,131 @@ add_subject(){
 	echo "$name"    >> "$subject_dir/$code.sub"
 	echo "$credits" >> "$subject_dir/$code.sub"
 	echo "added: $code"
+}
+#--------------------------
+
+
+list_subjects(){
+
+
+	files=$(ls "$subject_dir"/*.sub 2>/dev/null)
+
+	if [[ -z $files ]]
+	then
+        	echo "no subjects."
+        	return
+	fi
+
+	echo "code | name | credits"
+
+	echo "---------------------"
+	for file in $files
+	do
+
+		code=$(sed -n '1p' "$file")
+
+		name=$(sed -n '2p' "$file")
+
+		credits=$(sed -n '3p' "$file")
+
+		echo "$code | $name | $credits"
+
+	done
+
+}
+
+#------------------------------
+
+update_subject(){
+
+
+	while true
+	do
+		read -p "enter code to update: " code
+
+		if [[ ! $code =~ ^[A-Za-z]{2,5}[0-9]{2,4}$ ]]
+		then
+			echo "invalid code"
+			continue
+		fi
+
+		file="$subject_dir/$code.sub"
+		if [[ ! -f "$file" ]]
+		then
+			echo "not found"
+			continue
+		fi
+
+		break
+	done
+
+	old_name=$(sed -n '2p' "$file")
+	old_credits=$(sed -n '3p' "$file")
+
+	echo "current name   : $old_name"
+	echo "current credits: $old_credits"
+	echo "leave empty to keep old value."
+
+	read -p "new name: " new_name
+	if [[ -z $new_name ]]; 
+        then 
+        new_name="$old_name"; 
+        fi
+
+	while true
+	do
+		read -p "new credits (1-6): " new_credits
+		if [[ -z $new_credits ]]
+		then
+		new_credits="$old_credits"
+		break
+		fi
+
+		if [[ $new_credits =~ ^[0-9]+$ ]] && [[ $new_credits -ge 1 && $new_credits -le 6 ]]
+		then
+			break
+		else
+			echo "invalid credits"
+		fi
+	done
+
+	echo "$code"        >  "$file"
+	echo "$new_name"    >> "$file"
+	echo "$new_credits" >> "$file"
+
+	echo "updated: $code"
+}
+
+delete_subject(){
+
+
+	while true
+	do
+		read -p "enter code to delete: " code
+
+		if [[ ! $code =~ ^[A-Za-z]{2,5}[0-9]{2,4}$ ]]
+		then
+			echo "invalid code"
+			continue
+		fi
+
+		file="$subject_dir/$code.sub"
+		if [[ ! -f "$file" ]]
+		then
+			echo "not found"
+			continue
+		fi
+
+		break
+	done
+
+	read -p "are you sure? (y/n): " ans
+	if [[ $ans == "y" ]]
+	then
+		rm -f "$file"
+		rm -f "$grade_dir/$code.grd" 2>/dev/null
+		echo "deleted: $code"
+	else
+		echo "canceled."
+	fi
 }
