@@ -150,7 +150,7 @@ while true; do
 	do
 		case $REPLY in 
 	1)  	 ManageStudents ;;
-	2)	 ManageSubjects ;;
+	2)	 subject_menu ;;
 	3) 	 ManageGrades ;;
 	4)	 Reports_Statistics ;;
 	5)	 exit ;;
@@ -346,4 +346,38 @@ update_subject(){
 	echo "$new_credits" >> "$file"
 
 	echo "updated: $code"
+}
+
+delete_subject(){
+
+
+	while true
+	do
+		read -p "enter code to delete: " code
+
+		if [[ ! $code =~ ^[A-Za-z]{2,5}[0-9]{2,4}$ ]]
+		then
+			echo "invalid code"
+			continue
+		fi
+
+		file="$subject_dir/$code.sub"
+		if [[ ! -f "$file" ]]
+		then
+			echo "not found"
+			continue
+		fi
+
+		break
+	done
+
+	read -p "are you sure? (y/n): " ans
+	if [[ $ans == "y" ]]
+	then
+		rm -f "$file"
+		rm -f "$grade_dir/$code.grd" 2>/dev/null
+		echo "deleted: $code"
+	else
+		echo "canceled."
+	fi
 }
