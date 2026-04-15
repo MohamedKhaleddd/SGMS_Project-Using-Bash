@@ -166,6 +166,8 @@ done
 }
 mainmenu
 #---------------------------------------------------------- subject part ( omar )
+
+
 subject_dir="sgms_data/subjects"
 grade_dir="sgms_data/grades"
 
@@ -192,6 +194,7 @@ subject_menu(){
 	done
 }
 # ----------------------
+
 add_subject(){
 
 	while true
@@ -281,4 +284,66 @@ list_subjects(){
 
 	done
 
+}
+
+#------------------------------
+
+update_subject(){
+
+
+	while true
+	do
+		read -p "enter code to update: " code
+
+		if [[ ! $code =~ ^[A-Za-z]{2,5}[0-9]{2,4}$ ]]
+		then
+			echo "invalid code"
+			continue
+		fi
+
+		file="$subject_dir/$code.sub"
+		if [[ ! -f "$file" ]]
+		then
+			echo "not found"
+			continue
+		fi
+
+		break
+	done
+
+	old_name=$(sed -n '2p' "$file")
+	old_credits=$(sed -n '3p' "$file")
+
+	echo "current name   : $old_name"
+	echo "current credits: $old_credits"
+	echo "leave empty to keep old value."
+
+	read -p "new name: " new_name
+	if [[ -z $new_name ]]; 
+        then 
+        new_name="$old_name"; 
+        fi
+
+	while true
+	do
+		read -p "new credits (1-6): " new_credits
+		if [[ -z $new_credits ]]
+		then
+		new_credits="$old_credits"
+		break
+		fi
+
+		if [[ $new_credits =~ ^[0-9]+$ ]] && [[ $new_credits -ge 1 && $new_credits -le 6 ]]
+		then
+			break
+		else
+			echo "invalid credits"
+		fi
+	done
+
+	echo "$code"        >  "$file"
+	echo "$new_name"    >> "$file"
+	echo "$new_credits" >> "$file"
+
+	echo "updated: $code"
 }
