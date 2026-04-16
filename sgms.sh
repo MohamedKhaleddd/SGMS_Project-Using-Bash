@@ -685,6 +685,46 @@ delete_grade(){
 	fi
 }
 
+view_by_subject(){
+
+	# ------------------------ subject code
+	while true
+	do
+		read -p "subject code: " code
+		case $code in
+			+([A-Za-z])+([0-9]))
+				letters=$(echo "$code" | sed 's/[0-9]*$//')
+				digits=$(echo "$code"  | sed 's/^[A-Za-z]*//')
+
+				if [[ ${#letters} -ge 2 && ${#letters} -le 5 && ${#digits} -ge 2 && ${#digits} -le 4 ]]
+				then
+					if [[ ! -f "$subject_dir/$code.sub" ]]
+					then
+						echo "subject not found"
+						continue
+					fi
+					break
+				else
+					echo "invalid code"
+				fi
+				;;
+			*) echo "invalid code" ;;
+		esac
+	done
+
+	file="$grade_dir/$code.grd"
+	if [[ ! -f "$file" ]] || [[ ! -s "$file" ]]
+	then
+		echo "no grades"
+		return
+	fi
+
+	echo "student_id | score | letter"
+	echo "-----------------------------"
+	awk -F"|" '{print $1" | "$2" | "$3}' "$file"
+}
+
+
 
 
 mainmenu
