@@ -513,6 +513,106 @@ assign_grade(){
 	echo "$sid|$score|$letter" >> "$file"
 	echo "assigned: $sid -> $code ($score $letter)"
 }
+#--------------------------------------------------------------------------------------------- update function 
+
+
+update_grade(){
+
+# ---------------- subject code
+
+	while true
+	do
+		read -p "subject code: " code
+		case $code in
+			+([A-Za-z])+([0-9]))
+				letters=$(echo "$code" | sed 's/[0-9]*$//')
+				digits=$(echo "$code"  | sed 's/^[A-Za-z]*//')
+
+				if [[ ${#letters} -ge 2 && ${#letters} -le 5 && ${#digits} -ge 2 && ${#digits} -le 4 ]]
+				then
+					if [[ ! -f "$subject_dir/$code.sub" ]]
+					then
+						echo "subject not found."
+						continue
+					fi
+
+					if [[ ! -f "$grade_dir/$code.grd" ]]
+					then
+						echo "no grades for this subject"
+						continue
+					fi
+
+					break
+				else
+					echo "invalid code"
+				fi
+				;;
+			*) echo "invalid code" ;;
+		esac
+	done
+
+# ------------------ student id
+
+
+	while true
+	do
+		read -p "student id: " sid
+		case $sid in
+			+([1-9])*([0-9]))
+				if [[ ${#sid} -le 10 ]]
+				then
+					break
+				else
+					echo "invalid id"
+				fi
+				;;
+			*) echo "invalid id" ;;
+		esac
+	done
+
+	file="$grade_dir/$code.grd"
+	if ! grep -q "^$sid|" "$file"
+	then
+		echo "grade not found"
+		return
+	fi
+
+	# ------------ new score
+	while true
+	do
+		read -p "new score (0-100): " score
+		case $score in
+			+([0-9])|+([0-9]).+([0-9]))
+				if echo "$score" | awk '{ if($1>=0 && $1<=100) exit 0; else exit 1 }'
+				then
+					break
+				else
+					echo "invalid score"
+				fi
+				;;
+			*) echo "invalid score" ;;
+		esac
+	done
+
+	# ---------------- new letter 
+	letter=$(echo "$score" | awk '{
+		s=$1
+		if      (s>=90) print "A+"
+		else if (s>=85) print "A"
+		else if (s>=80) print "A-"
+		else if (s>=75) print "B+"
+		else if (s>=70) print "B"
+		else if (s>=65) print "B-"
+		else if (s>=60) print "C+"
+		else if (s>=55) print "C"
+		else if (s>=50) print "C-"
+		else if (s>=45) print "D"
+		else            print "F"
+	}')
+
+	sed -i "s/^$sid|.*/$sid|$score|$letter/" "$file"
+	echo "updated: $sid -> $code ($score $letter)"
+}
 
 
 
