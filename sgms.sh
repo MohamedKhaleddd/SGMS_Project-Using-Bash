@@ -164,7 +164,7 @@ while true; do
 
 done
 }
-mainmenu
+
 #---------------------------------------------------------- subject part ( omar )
 
 
@@ -381,3 +381,31 @@ delete_subject(){
 		echo "canceled."
 	fi
 }
+# ------------------ grade part ( omar )
+
+grade_menu(){
+	while true
+	do
+		echo "----- grade management -----"
+		echo "1) assign grade to student"
+		echo "2) update existing grade"
+		echo "3) delete a grade"
+		echo "4) view grades by subject"
+		echo "5) view grades by student"
+		echo "6) back"
+		read -p "choose: " choice
+
+		case $choice in
+			1) assign_grade ;;
+			2) update_grade ;;
+			3) delete_grade ;;
+			4) view_by_subject ;;
+			5) view_by_student ;;
+			6) break ;;
+			*) echo "invalid choice" ;;
+		esac
+	done
+}
+
+
+mainmenu
