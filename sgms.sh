@@ -93,18 +93,61 @@ while true
 }
 function ListStudents(){
 
-if [[ ! -d "$std_data_dir" || -z "$(ls "$std_data_dir")" ]]; then
-echo "not founded any students"
-return
-fi
+        if [[ ! -d "$std_data_dir" || -z "$(ls "$std_data_dir")" ]]; then
+                echo "not founded any students"
+                return
+        fi
 
-  for file in "$std_data_dir"/*.stu
-    do
-        echo "----------------------"
-        cat "$file"
-    done
+        for file in "$std_data_dir"/*.stu
+                do
+                        echo "----------------------"
+                        cat "$file"
+                done
 
 }
+
+function DeleteStudent(){
+        while true; 
+                do
+
+                        if [[ ! -d "$std_data_dir" || -z "$(ls "$std_data_dir")" ]]
+                        then
+                                echo "no students to deleted"
+                                break
+                        fi
+
+                read -p "Enter Student Id you want to delete: " std_id 
+                file=""$std_data_dir"/$std_id.stu"
+                if [[ ! -f "$file" ]] ; then
+                        echo "student not found"
+                        continue
+                fi
+
+                read -p "are you sure to delete? (y/n): " sure
+                if [[ "$sure" == "y" || "$sure" == "Y" ]]; then 
+                        rm "$file"
+                        echo "student is deleted "
+ 
+                else 
+                        echo "cancel"
+                        continue
+                fi
+ 
+                read -p "do you want delete student else? (y/n) " check
+                        if [[ "$check" == "y" || "$check" == "Y" ]]; then
+                                continue
+                        else
+                                break
+                        fi
+ 
+        done
+}
+
+
+
+
+
+
 
 
 
