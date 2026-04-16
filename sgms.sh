@@ -71,14 +71,14 @@ while true
                                         continue
                                                 ;;
 	                esac
-	                        echo "$std_name:$std_Email:$std_year" > "$std_data_dir/$std_id.stu"
-	                        echo "Student Adeed"
+	                        
                 done
                 echo "$std_id" >> "$file"
                 echo "$std_name" >> "$file"
                 echo "$std_Email" >> "$file"
                 echo "$std_year" >> "$file"
-                
+                echo "Student Added"
+            
                 read -p "Do u wanna add more student?(y/n) " check
                 if [[ "$check" == "y" || "$check" == "Y" ]]
                         then 
@@ -103,6 +103,97 @@ function ListStudents(){
                         echo "----------------------"
                         cat "$file"
                 done
+
+}
+
+function check_name(){
+		    
+		    while true
+		                do
+			                read -p "Enter new name: " name
+			                if [[ -z "$name" ]]
+			                        then
+			                                echo "name cant be empty"
+			                else
+			                sed -i "2s/.*/$name/" "$file"
+			                        break
+			                fi
+		                done
+		    
+}
+
+function check_email (){
+
+                while true;
+		        do 
+			    read -p "Enter new email: " email
+			if [[ "$email" =~  ^.+@.+\..+$ ]]
+			        then
+			                sed -i "3s/.*/$email/" "$file"
+			                break 
+			else
+			        echo "please input valid email"
+			fi
+		        done
+}
+
+function check_year(){
+		while true; 
+		do
+			read -p "Enter new year: " year
+			        if [[ "$year" =~ ^[1-6]$  ]]
+			                then
+			                        sed -i "4s/.*/$year/" "$file"
+			                break
+			        else
+			                echo "please input valid number between 1-6 "
+			        fi
+		done
+
+}
+
+function UpdateStudent(){
+                while true;
+                        do
+                                read -p "enter id student you want update: " std_id 
+
+                                file=""$std_data_dir"/$std_id.stu"
+
+
+                                if [[ ! -f "$file" ]]; then
+                                        echo "student not found"
+                                        continue
+                                fi
+
+                while true
+                        do
+      
+                        echo "What do you want to update?"
+  
+                        select choice in "name" "email" "year" "exit"
+                        do
+                                case $choice in
+                                "name")  
+			                check_name
+		                                ;;
+                                "email") 
+                    	                check_email
+                                                ;;
+                                "year") 
+                  	                check_year
+           		                        ;;
+                                "exit") return 
+                                        ;;
+                                *) 
+                                        echo "Invalid choice" ;;
+                                esac
+                                echo "Updated successfully"
+                        done
+    
+    done
+    	
+    
+done
 
 }
 
