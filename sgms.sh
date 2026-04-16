@@ -725,6 +725,64 @@ view_by_subject(){
 }
 
 
+#---------------------------------------------------------
+view_by_student(){
+
+# ---------------------- student id
+
+
+	while true
+	do
+		read -p "student id: " sid
+		case $sid in
+			+([1-9])*([0-9]))
+				if [[ ${#sid} -le 10 ]]
+				then
+					if [[ ! -f "$student_dir/$sid.stu" ]]
+					then
+						echo "student not found"
+						continue
+					fi
+					break
+				else
+					echo "invalid id"
+				fi
+				;;
+			*) echo "invalid id" ;;
+		esac
+	done
+
+	files=$(ls "$grade_dir"/*.grd 2>/dev/null)
+	if [[ -z $files ]]
+	then
+		echo "no grades files"
+		return
+	fi
+
+	found=0
+	echo "subject | score | letter"
+	echo "------------------------"
+
+	for f in $files
+	do
+		code=$(echo "$f" | sed 's|.*/||' | sed 's/\.grd$//')
+
+		line=$(grep "^$sid|" "$f" 2>/dev/null)
+		if [[ -n $line ]]
+		then
+			found=1
+			score=$(echo "$line" | awk -F"|" '{print $2}')
+			letter=$(echo "$line" | awk -F"|" '{print $3}')
+			echo "$code | $score | $letter"
+		fi
+	done
+
+	if [[ $found -eq 0 ]]
+	then
+		echo "no grades for this student"
+	fi
+}
+
 
 
 mainmenu
