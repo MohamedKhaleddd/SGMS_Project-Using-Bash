@@ -151,7 +151,7 @@ while true; do
 		case $REPLY in 
 	1)  	 ManageStudents ;;
 	2)	 subject_menu ;;
-	3) 	 ManageGrades ;;
+	3) 	 grade_menu ;;
 	4)	 Reports_Statistics ;;
 	5)	 exit ;;
 		
@@ -614,7 +614,76 @@ update_grade(){
 	echo "updated: $sid -> $code ($score $letter)"
 }
 
+delete_grade(){
 
+# ------------------- subject code
+	while true
+	do
+
+		read -p "subject code: " code
+		case $code in
+			+([A-Za-z])+([0-9]))
+				letters=$(echo "$code" | sed 's/[0-9]*$//')
+				digits=$(echo "$code"  | sed 's/^[A-Za-z]*//')
+
+				if [[ ${#letters} -ge 2 && ${#letters} -le 5 && ${#digits} -ge 2 && ${#digits} -le 4 ]]
+				then
+					if [[ ! -f "$subject_dir/$code.sub" ]]
+					then
+						echo "subject not found."
+						continue
+					fi
+					break
+				else
+					echo "invalid code."
+				fi
+				;;
+			*) echo "invalid code." ;;
+		esac
+	done
+
+
+	file="$grade_dir/$code.grd"
+	if [[ ! -f "$file" ]]
+	then
+		echo "no grades for this subject."
+		return
+	fi
+
+
+
+	# -------- student id --------
+	while true
+	do
+		read -p "student id: " sid
+		case $sid in
+			+([1-9])*([0-9]))
+				if [[ ${#sid} -le 10 ]]
+				then
+					break
+				else
+					echo "invalid id."
+				fi
+				;;
+			*) echo "invalid id." ;;
+		esac
+	done
+
+	if ! grep -q "^$sid|" "$file"
+	then
+		echo "grade not found."
+		return
+	fi
+
+	read -p "sure? (y/n): " ans
+	if [[ $ans == "y" || $ans == "Y" ]]
+	then
+		sed -i "/^$sid|/d" "$file"
+		echo "deleted."
+	else
+		echo "canceled."
+	fi
+}
 
 
 
