@@ -384,6 +384,13 @@ delete_subject(){
 # ------------------ grade part ( omar )
 
 grade_menu(){
+
+
+		student_dir="sgms_data/students"
+		subject_dir="sgms_data/subjects"
+		grade_dir="sgms_data/grades"
+
+	mkdir -p "$student_dir" "$subject_dir" "$grade_dir"
 	while true
 	do
 		echo "----- grade management -----"
@@ -406,6 +413,109 @@ grade_menu(){
 		esac
 	done
 }
+
+assign_grade(){
+
+	# -------------- subject code
+	while true
+	do
+		read -p "subject code: " code
+		case $code in
+			+([A-Za-z])+([0-9]))
+				letters=$(echo "$code" | sed 's/[0-9]*$//')
+				digits=$(echo "$code"  | sed 's/^[A-Za-z]*//')
+
+				if [[ ${#letters} -ge 2 && ${#letters} -le 5 && ${#digits} -ge 2 && ${#digits} -le 4 ]]
+				then
+					if [[ -f "$subject_dir/$code.sub" ]]
+					then
+						break
+					else
+						echo "subject not found."
+					fi
+				else
+					echo "invalid code."
+				fi
+				;;
+			*) echo "invalid code." ;;
+		esac
+	done
+
+	# --------------------- student id
+	while true
+	do
+		read -p "student id: " sid
+		case $sid in
+			+([1-9])*([0-9]))
+				if [[ ${#sid} -le 10 ]]
+				then
+					if [[ -f "$student_dir/$sid.stu" ]]
+					then
+						break
+					else
+						echo "student not found."
+					fi
+				else
+					echo "invalid id."
+				fi
+				;;
+			*) echo "invalid id." ;;
+		esac
+	done
+
+	file="$grade_dir/$code.grd"
+
+	# prevent duplicate grade
+
+
+	if [[ -f "$file" ]] && grep -q "^$sid|" "$file" 2>/dev/null
+	then
+		echo " grade already exists"
+		return
+	fi
+
+
+	# ------------ score
+
+	while true
+	do
+		read -p "score (0-100): " score
+		case $score in
+			+([0-9])|+([0-9]).+([0-9]))
+				if echo "$score" | awk '{ if($1>=0 && $1<=100) exit 0; else exit 1 }'
+				then
+					break
+				else
+					echo "invalid score."
+				fi
+				;;
+			*) echo "invalid score." ;;
+		esac
+	done
+
+	# ----- letter
+
+	letter=$(echo "$score" | awk '{
+		s=$1
+		if      (s>=90) print "A+"
+		else if (s>=85) print "A"
+		else if (s>=80) print "A-"
+		else if (s>=75) print "B+"
+		else if (s>=70) print "B"
+		else if (s>=65) print "B-"
+		else if (s>=60) print "C+"
+		else if (s>=55) print "C"
+		else if (s>=50) print "C-"
+		else if (s>=45) print "D"
+		else            print "F"
+	}')
+
+	echo "$sid|$score|$letter" >> "$file"
+	echo "assigned: $sid -> $code ($score $letter)"
+}
+
+
+
 
 
 mainmenu
