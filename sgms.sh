@@ -269,6 +269,99 @@ ManageStudents() {
         done
     done
 }
+
+
+
+#----------------------------------------------Reports--------------------------------------------
+
+StudentTranscriptGPA(){
+
+    read -p "Enter student ID: " std_id
+
+    file="$std_data_dir/$std_id.stu"
+
+    if [[ ! -f "$file" ]]; then
+        echo "Student not found"
+        return
+    fi
+     name=$(sed -n '2p' "$file")
+    email=$(sed -n '3p' "$file")
+    year=$(sed -n '4p' "$file")
+
+    echo "----- Student Info -----"
+    echo "ID: $std_id"
+    echo "Name: $name"
+    echo "Email: $email"
+    echo "Year: $year"
+
+    echo ""
+    echo "----- Grades -----"
+
+    found=0
+
+    for file in "$grade_dir"/*.grd
+    do
+        [[ -f "$file" ]] || continue
+
+        code=$(basename "$file" .grd)
+
+        line=$(grep "^$std_id|" "$file")
+
+        if [[ -n "$line" ]]
+        then
+            found=1
+            score=$(echo "$line" | awk -F"|" '{print $2}')
+            letter=$(echo "$line" | awk -F"|" '{print $3}')
+
+            echo "$code | $score | $letter"
+        fi
+    done
+
+    if [[ $found == 0 ]]; then
+        echo "No grades found"
+    fi
+
+    gpa=$(awk -F"|" -v id="$std_id" '
+    BEGIN {
+        total = 0
+        count = 0
+    }
+
+    $1 == id {
+        if ($3 == "A") point=4
+        else if ($3 == "A+") point=4.0
+        else if ($3 == "A-") point=3.7
+        else if ($3 == "B+") point=3.3   
+        else if ($3 == "B") point=3
+        else if ($3 == "B-") point=2.7
+        else if ($3 == "C+") point=2.3
+        else if ($3 == "C") point=2
+        else if ($3 == "C-") point=1.7
+        else if ($3 == "D") point=1
+        else point = 0 
+
+        total += point
+        count++
+    }
+
+    END {
+        if (count > 0)
+            printf "%.2f", total / count
+        else
+            print "0.00"
+    }
+    ' "$grade_dir"/*.grd)
+
+    echo "GPA: $gpa"
+}
+
+
+
+
+
+
+
+
 Reports_Statistics(){
 while true
      do
