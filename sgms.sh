@@ -269,6 +269,35 @@ ManageStudents() {
         done
     done
 }
+Reports_Statistics(){
+while true
+     do
+        echo ""
+        echo "*** Reports And Statistics ***"
+
+        select choice in \
+		"▸StudentTranscriptGPA" \
+		"▸SubjectStatistics"\
+		"▸TopStudentsbyGPA"\
+		"▸FailingStudentsReport" \
+		"▸FullGradeMatrix" \
+		"▸Exit"
+        do
+            case $REPLY in
+                1) StudentTranscriptGPA ;;
+                2) SubjectStatistics ;;
+                3) TopStudentsByGPA ;;
+                4) FailingStudentsReport ;;
+                5) FullGradeMatrix ;;
+                6) mainmenu ;;
+                *)
+                    echo "Invalid option"
+                    ;;
+            esac
+            break
+        done
+    done
+   }
 
 mainmenu(){
 while true; do
@@ -279,7 +308,7 @@ while true; do
 		"▸ManageStudents" \
 		"▸ManageSubjects" \
 		"▸ManageGrades" \
-		"▸Reports&Statistics" \
+		"▸Reports_Statistics" \
 		"▸Exit"
 	do
 		case $REPLY in 
