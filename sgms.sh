@@ -488,6 +488,35 @@ FailingStudentsReport(){
 } 
 
 
+FullGradeMatrix(){
+
+    echo "----- Full Grade Matrix -----"
+
+    for stu in "$std_data_dir"/*.stu
+    do
+        sid=$(sed -n '1p' "$stu")
+        name=$(sed -n '2p' "$stu")
+        
+        echo "-----------------------------------------"
+
+        echo "Student: $name"
+
+        for grd in "$grade_dir"/*.grd
+        do
+            code=$(basename "$grd" .grd)
+            line=$(grep "^$sid|" "$grd")
+
+            if [[ -n "$line" ]]
+            then
+                score=$(echo "$line" | cut -d'|' -f2)
+                grade=$(echo "$line" | cut -d'|' -f3)
+                echo "  $code | $score | $grade"
+            fi
+        done
+    done
+}
+
+
 
 
 Reports_Statistics(){
