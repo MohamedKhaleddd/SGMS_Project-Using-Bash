@@ -447,12 +447,45 @@ TopStudentsByGPA(){
         done
 
         if [[ $count > 0 ]]; then
-        gpa=$(echo "scale=2; $total / $count" | bc)
-            echo "$name $gpa"
+        gpa=$(echo " $total / $count" | bc -l)
+            echo "$name ${gpa: 0:4}"
         fi
 
     done | sort -k2 -nr
 }
+
+
+
+FailingStudentsReport(){
+
+    echo "----- Failing Students -----"
+
+    for stu in "$std_data_dir"/*.stu
+    do
+        sid=$(sed -n '1p' "$stu")
+        name=$(sed -n '2p' "$stu")
+
+        for grd in "$grade_dir"/*.grd
+        do
+            line=$(grep "^$sid|" "$grd")
+
+            if [[ -n "$line" ]]
+            then
+
+                grade=$(echo "$line" | cut -d'|' -f3)
+
+                if [[ "$grade" == "F" ]]
+                then
+                code=$(basename "$grd" .grd)
+                    echo "$name - $code"
+                    break
+                fi
+
+            fi
+        done
+
+    done
+} 
 
 
 
@@ -486,7 +519,12 @@ while true
         done
     done
    }
-
+   
+   
+   
+   
+   
+ 
 mainmenu(){
 while true; do
     echo ""
