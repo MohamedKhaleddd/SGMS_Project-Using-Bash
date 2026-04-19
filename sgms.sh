@@ -275,15 +275,26 @@ ManageStudents() {
 #----------------------------------------------Reports--------------------------------------------
 
 StudentTranscriptGPA(){
-
-    read -p "Enter student ID: " std_id
-
-    file="$std_data_dir/$std_id.stu"
-
-    if [[ ! -f "$file" ]]; then
-        echo "Student not found"
+ if [[ ! -d "$std_data_dir" || -z "$(ls "$std_data_dir")" ]]
+     then
+        echo "No students found"
         return
     fi
+
+while true
+        do
+
+                read -p "Enter student ID: " std_id
+
+                file="$std_data_dir/$std_id.stu"
+
+                if [[ -f "$file" ]]
+                then
+                        break
+                else
+                        echo "Student not found"
+                fi
+        done
      name=$(sed -n '2p' "$file")
     email=$(sed -n '3p' "$file")
     year=$(sed -n '4p' "$file")
@@ -358,16 +369,23 @@ StudentTranscriptGPA(){
 
 
 SubjectStatistics(){
-
-   read -p "Enter subject code: " code
-
-    file="$subject_dir/$code.sub"
-
-    if [[ ! -f "$file" ]]
-    then
-        echo "Subject not found"
+ if [[ ! -d "$subject_dir" || -z "$(ls "$subject_dir")" ]]
+     then
+        echo "No subject found"
         return
     fi
+   while true
+    do
+        read -p "Enter subject code: " code
+
+        file="$subject_dir/$code.sub"
+
+        if [[ -f "$file" ]]; then
+            break
+        else
+            echo "Subject not found, try again"
+        fi
+    done
 
     name=$(sed -n '2p' "$file")
     credits=$(sed -n '3p' "$file")
@@ -417,6 +435,17 @@ awk -F'|' '
 TopStudentsByGPA(){
 
     echo "----- Top Students by GPA -----"
+     if [[ ! -d "$std_data_dir" || -z "$(ls "$std_data_dir")" ]]
+     then
+        echo "No students found"
+        return
+    fi
+
+    if [[ ! -d "$grade_dir" || -z "$(ls "$grade_dir")" ]]
+    then
+        echo "No grades found"
+        return
+    fi
 
     for stu in "$std_data_dir"/*.stu
     do
@@ -424,7 +453,6 @@ TopStudentsByGPA(){
         name=$(sed -n '2p' "$stu")
         total=0
         count=0
-
         for grd in "$grade_dir"/*.grd
         do
             line=$(grep "^$sid|" "$grd")
@@ -459,6 +487,18 @@ TopStudentsByGPA(){
 FailingStudentsReport(){
 
     echo "----- Failing Students -----"
+     if [[ ! -d "$std_data_dir" || -z "$(ls "$std_data_dir")" ]]
+     then
+        echo "No students found"
+        return
+    fi
+
+
+    if [[ ! -d "$grade_dir" || -z "$(ls "$grade_dir")" ]]
+    then
+        echo "No grades found"
+        return
+    fi
 
     for stu in "$std_data_dir"/*.stu
     do
@@ -491,6 +531,18 @@ FailingStudentsReport(){
 FullGradeMatrix(){
 
     echo "----- Full Grade Matrix -----"
+     if [[ ! -d "$std_data_dir" || -z "$(ls "$std_data_dir")" ]]
+     then
+        echo "No students found"
+        return
+    fi
+
+
+    if [[ ! -d "$grade_dir" || -z "$(ls "$grade_dir")" ]]
+    then
+        echo "No grades found"
+        return
+    fi
 
     for stu in "$std_data_dir"/*.stu
     do
