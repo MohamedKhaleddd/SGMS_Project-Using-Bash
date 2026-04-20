@@ -153,7 +153,12 @@ function check_year(){
 }
 
 function UpdateStudent(){
-                while true;
+        if [[ ! -d "$std_data_dir" || -z "$(ls "$std_data_dir")" ]]
+        then
+                echo "No students found"
+                return
+        fi
+                while true
                         do
                                 read -p "enter id student you want update: " std_id 
 
